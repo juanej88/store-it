@@ -1,9 +1,10 @@
 'use server';
 
+import { avatarPlaceholderUrl } from '@/constants/index';
 import { cookies } from 'next/headers';
 import { ID, Query } from 'node-appwrite';
 import { appwriteConfig } from '../appwrite/config';
-import { createAdminClient } from '../appwrite/index';
+import { createAdminClient, createSessionClient } from '../appwrite/index';
 import { parseStringify } from '../utils';
 
 const getUserByEmail = async (email: string) => {
@@ -51,7 +52,7 @@ export const createAccount = async ({ fullName, email }: { fullName: string, ema
       {
         fullName,
         email,
-        avatar: 'https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg',
+        avatar: avatarPlaceholderUrl,
         accountId
       }
     );
@@ -76,4 +77,20 @@ export const verifySecret = async ({ accountId, password }: {accountId: string, 
   } catch (error) {
     handleError(error, 'Failed to verify OTP');
   };
+};
+
+export const getCurrentUser = async () => {
+  const { databases, account } = await createSessionClient();
+
+  const result = await account.get();
+
+  const user = await databases.listDocuments(
+    appwriteConfig.databaseId,
+    appwriteConfig.usersCollectionId,
+    [Query.equal('accountId', result.$id)],
+  );
+
+  if(user.total <= 0) return null;
+
+  return parseStringify(user.documents[0]);
 };
