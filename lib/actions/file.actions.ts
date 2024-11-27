@@ -75,18 +75,14 @@ export const getFiles = async () => {
 
     const queries = createQueries(currentUser);
 
-    console.log({currentUser, queries});
-
     const files = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.filesCollectionId,
       queries,
     );
 
-    console.log({ files });
-
     return parseStringify(files);
   } catch (error) {
     handleError(error, 'Failed to get files')
-  }
+  };
 };
