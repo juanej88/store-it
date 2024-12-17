@@ -42,7 +42,7 @@ export const sortTypes = [
     value: '$createdAt-desc',
   },
   {
-    label: 'Created Date (oldest)',
+    label: 'Date Created (oldest)',
     value: '$createdAt-asc',
   },
   {
